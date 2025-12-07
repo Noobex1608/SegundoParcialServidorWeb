@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+  # RabbitMQ - Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    networks:
+      - microservicios-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Para Idempotencia
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - microservicios-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL para Microservicio Clientes
+  db-clientes:
+    image: postgres:15-alpine
+    container_name: db-clientes
+    environment:
+      POSTGRES_DB: clientes_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-clientes-data:/var/lib/postgresql/data
+    networks:
+      - microservicios-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d clientes_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL para Microservicio Reservas
+  db-reservas:
+    image: postgres:15-alpine
+    container_name: db-reservas
+    environment:
+      POSTGRES_DB: reservas_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-reservas-data:/var/lib/postgresql/data
+    networks:
+      - microservicios-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d reservas_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Microservicio Clientes
+  microservicio-clientes:
+    build:
+      context: ./microservicio-clientes
+      dockerfile: Dockerfile
+    container_name: microservicio-clientes
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_HOST: db-clientes
+      DATABASE_PORT: 5432
+      DATABASE_USER: admin
+      DATABASE_PASSWORD: admin123
+      DATABASE_NAME: clientes_db
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      RABBITMQ_QUEUE_CLIENTES: cola_clientes
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db-clientes:
+        condition: service_healthy
+    networks:
+      - microservicios-network
+    restart: unless-stopped
+
+  # Microservicio Reservas
+  microservicio-reservas:
+    build:
+      context: ./microservicio-reservas
+      dockerfile: Dockerfile
+    container_name: microservicio-reservas
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DATABASE_HOST: db-reservas
+      DATABASE_PORT: 5432
+      DATABASE_USER: admin
+      DATABASE_PASSWORD: admin123
+      DATABASE_NAME: reservas_db
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      RABBITMQ_QUEUE_RESERVAS: cola_reservas
+      RABBITMQ_QUEUE_VALIDAR_CLIENTE: cola_validar_cliente
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db-reservas:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - microservicios-network
+    restart: unless-stopped
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      MICROSERVICIO_CLIENTES_HOST: microservicio-clientes
+      MICROSERVICIO_CLIENTES_PORT: 3001
+      MICROSERVICIO_RESERVAS_HOST: microservicio-reservas
+      MICROSERVICIO_RESERVAS_PORT: 3002
+    depends_on:
+      - rabbitmq
+      - microservicio-clientes
+      - microservicio-reservas
+    networks:
+      - microservicios-network
+    restart: unless-stopped
+
+networks:
+  microservicios-network:
+    driver: bridge
+
+volumes:
+  postgres-clientes-data:
+  postgres-reservas-data:
