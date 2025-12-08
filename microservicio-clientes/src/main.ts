@@ -20,14 +20,12 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin123@localhost:5672'],
+      urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin123@rabbitmq:5672'],
       queue: process.env.RABBITMQ_QUEUE_VALIDAR_CLIENTE || 'cola_validar_cliente',
       queueOptions: {
         durable: true,
       },
-      // Configuración para procesamiento confiable
-      noAck: false, // Requiere ACK manual
-      prefetchCount: 1, // Procesar un mensaje a la vez
+      // Sin noAck ni prefetchCount para request-reply pattern
     },
   });
 

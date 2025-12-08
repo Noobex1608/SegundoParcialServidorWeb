@@ -1,22 +1,16 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { firstValueFrom, catchError } from 'rxjs';
-import { AxiosError } from 'axios';
+import { Injectable, Logger, Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout, catchError } from 'rxjs';
+import { BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 
 @Injectable()
 export class ClientesService {
   private readonly logger = new Logger(ClientesService.name);
-  private readonly baseUrl: string;
 
   constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    @Inject('CLIENTES_SERVICE') private readonly clientesService: ClientProxy,
   ) {
-    const host = this.configService.get('MICROSERVICIO_CLIENTES_HOST', 'localhost');
-    const port = this.configService.get('MICROSERVICIO_CLIENTES_PORT', '3001');
-    this.baseUrl = `http://${host}:${port}/clientes`;
-    this.logger.log(`🔗 Conectando a Microservicio Clientes: ${this.baseUrl}`);
+    this.logger.log('🐰 Conectado a Microservicio Clientes vía RabbitMQ');
   }
 
   /**
@@ -24,18 +18,18 @@ export class ClientesService {
    */
   async crearCliente(crearClienteDto: any) {
     try {
-      this.logger.log('📤 Reenviando petición: POST /clientes');
-      const response = await firstValueFrom(
-        this.httpService.post(this.baseUrl, crearClienteDto).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log('📤 Enviando mensaje RabbitMQ: crear_cliente');
+      return await firstValueFrom(
+        this.clientesService.send('crear_cliente', crearClienteDto).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de clientes no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -44,18 +38,18 @@ export class ClientesService {
    */
   async obtenerTodosLosClientes() {
     try {
-      this.logger.log('📤 Reenviando petición: GET /clientes');
-      const response = await firstValueFrom(
-        this.httpService.get(this.baseUrl).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log('📤 Enviando mensaje RabbitMQ: obtener_clientes');
+      return await firstValueFrom(
+        this.clientesService.send('obtener_clientes', {}).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de clientes no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -64,18 +58,18 @@ export class ClientesService {
    */
   async obtenerClientePorId(id: number) {
     try {
-      this.logger.log(`📤 Reenviando petición: GET /clientes/${id}`);
-      const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/${id}`).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log(`📤 Enviando mensaje RabbitMQ: obtener_cliente_por_id ${id}`);
+      return await firstValueFrom(
+        this.clientesService.send('obtener_cliente_por_id', { id }).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de clientes no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -84,18 +78,18 @@ export class ClientesService {
    */
   async actualizarCliente(id: number, actualizarClienteDto: any) {
     try {
-      this.logger.log(`📤 Reenviando petición: PATCH /clientes/${id}`);
-      const response = await firstValueFrom(
-        this.httpService.patch(`${this.baseUrl}/${id}`, actualizarClienteDto).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log(`📤 Enviando mensaje RabbitMQ: actualizar_cliente ${id}`);
+      return await firstValueFrom(
+        this.clientesService.send('actualizar_cliente', { id, ...actualizarClienteDto }).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de clientes no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -104,46 +98,18 @@ export class ClientesService {
    */
   async eliminarCliente(id: number) {
     try {
-      this.logger.log(`📤 Reenviando petición: DELETE /clientes/${id}`);
-      const response = await firstValueFrom(
-        this.httpService.delete(`${this.baseUrl}/${id}`).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log(`📤 Enviando mensaje RabbitMQ: eliminar_cliente ${id}`);
+      return await firstValueFrom(
+        this.clientesService.send('eliminar_cliente', { id }).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de clientes no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
-    }
-  }
-
-  /**
-   * Manejo centralizado de errores HTTP
-   */
-  private manejarError(error: any): never {
-    if (error.response) {
-      // El microservicio respondió con un error
-      this.logger.error(`❌ Error del microservicio: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-      throw new HttpException(
-        error.response.data,
-        error.response.status,
-      );
-    } else if (error.request) {
-      // No se recibió respuesta del microservicio
-      this.logger.error('❌ Microservicio de clientes no disponible');
-      throw new HttpException(
-        'Microservicio de clientes no disponible. Intente nuevamente.',
-        HttpStatus.SERVICE_UNAVAILABLE,
-      );
-    } else {
-      // Error en la configuración de la petición
-      this.logger.error(`❌ Error inesperado: ${error.message}`);
-      throw new HttpException(
-        'Error interno del servidor',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw error;
     }
   }
 }

@@ -1,22 +1,15 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { firstValueFrom, catchError } from 'rxjs';
-import { AxiosError } from 'axios';
+import { Injectable, Logger, Inject, ServiceUnavailableException } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout, catchError } from 'rxjs';
 
 @Injectable()
 export class ReservasService {
   private readonly logger = new Logger(ReservasService.name);
-  private readonly baseUrl: string;
 
   constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    @Inject('RESERVAS_SERVICE') private readonly reservasService: ClientProxy,
   ) {
-    const host = this.configService.get('MICROSERVICIO_RESERVAS_HOST', 'localhost');
-    const port = this.configService.get('MICROSERVICIO_RESERVAS_PORT', '3002');
-    this.baseUrl = `http://${host}:${port}/reservas`;
-    this.logger.log(`🔗 Conectando a Microservicio Reservas: ${this.baseUrl}`);
+    this.logger.log('🐰 Conectado a Microservicio Reservas vía RabbitMQ');
   }
 
   /**
@@ -25,26 +18,25 @@ export class ReservasService {
    */
   async crearReserva(crearReservaDto: any, idempotencyKey?: string) {
     try {
-      this.logger.log('📤 Reenviando petición: POST /reservas');
-      
-      // Construir headers, incluyendo la clave de idempotencia si existe
-      const headers: any = {};
+      this.logger.log('📤 Enviando mensaje RabbitMQ: crear_reserva');
       if (idempotencyKey) {
-        headers['x-idempotency-key'] = idempotencyKey;
         this.logger.log(`🔑 Usando clave de idempotencia: ${idempotencyKey}`);
       }
       
-      const response = await firstValueFrom(
-        this.httpService.post(this.baseUrl, crearReservaDto, { headers }).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      return await firstValueFrom(
+        this.reservasService.send('crear_reserva', { 
+          ...crearReservaDto, 
+          idempotencyKey 
+        }).pipe(
+          timeout(15000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de reservas no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -53,18 +45,18 @@ export class ReservasService {
    */
   async obtenerTodasLasReservas() {
     try {
-      this.logger.log('📤 Reenviando petición: GET /reservas');
-      const response = await firstValueFrom(
-        this.httpService.get(this.baseUrl).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log('📤 Enviando mensaje RabbitMQ: obtener_reservas');
+      return await firstValueFrom(
+        this.reservasService.send('obtener_reservas', {}).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de reservas no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -73,18 +65,18 @@ export class ReservasService {
    */
   async obtenerReservaPorId(id: number) {
     try {
-      this.logger.log(`📤 Reenviando petición: GET /reservas/${id}`);
-      const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/${id}`).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log(`📤 Enviando mensaje RabbitMQ: obtener_reserva_por_id ${id}`);
+      return await firstValueFrom(
+        this.reservasService.send('obtener_reserva_por_id', { id }).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de reservas no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -93,18 +85,18 @@ export class ReservasService {
    */
   async obtenerReservasPorCliente(clienteId: number) {
     try {
-      this.logger.log(`📤 Reenviando petición: GET /reservas/cliente/${clienteId}`);
-      const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/cliente/${clienteId}`).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log(`📤 Enviando mensaje RabbitMQ: obtener_reservas_por_cliente ${clienteId}`);
+      return await firstValueFrom(
+        this.reservasService.send('obtener_reservas_por_cliente', { clienteId }).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de reservas no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
+      throw error;
     }
   }
 
@@ -113,46 +105,18 @@ export class ReservasService {
    */
   async cancelarReserva(id: number) {
     try {
-      this.logger.log(`📤 Reenviando petición: PATCH /reservas/${id}/cancelar`);
-      const response = await firstValueFrom(
-        this.httpService.patch(`${this.baseUrl}/${id}/cancelar`).pipe(
-          catchError((error: AxiosError) => {
-            this.manejarError(error);
-            throw error;
+      this.logger.log(`📤 Enviando mensaje RabbitMQ: cancelar_reserva ${id}`);
+      return await firstValueFrom(
+        this.reservasService.send('cancelar_reserva', { id }).pipe(
+          timeout(10000),
+          catchError((error) => {
+            this.logger.error(`❌ Error RabbitMQ: ${error.message}`);
+            throw new ServiceUnavailableException('Servicio de reservas no disponible');
           }),
         ),
       );
-      return response.data;
     } catch (error) {
-      throw this.manejarError(error);
-    }
-  }
-
-  /**
-   * Manejo centralizado de errores HTTP
-   */
-  private manejarError(error: any): never {
-    if (error.response) {
-      // El microservicio respondió con un error
-      this.logger.error(`❌ Error del microservicio: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-      throw new HttpException(
-        error.response.data,
-        error.response.status,
-      );
-    } else if (error.request) {
-      // No se recibió respuesta del microservicio
-      this.logger.error('❌ Microservicio de reservas no disponible');
-      throw new HttpException(
-        'Microservicio de reservas no disponible. Intente nuevamente.',
-        HttpStatus.SERVICE_UNAVAILABLE,
-      );
-    } else {
-      // Error en la configuración de la petición
-      this.logger.error(`❌ Error inesperado: ${error.message}`);
-      throw new HttpException(
-        'Error interno del servidor',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw error;
     }
   }
 }

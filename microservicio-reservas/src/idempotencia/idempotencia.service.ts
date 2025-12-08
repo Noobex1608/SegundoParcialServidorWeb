@@ -72,6 +72,7 @@ export class IdempotenciaService {
       this.logger.error(`Error al obtener resultado cacheado: ${error.message}`);
       return null;
     }
+
   }
 
   /**

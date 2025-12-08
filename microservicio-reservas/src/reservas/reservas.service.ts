@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, Inject, Logger } fr
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, timeout } from 'rxjs';
+import { firstValueFrom, timeout, retry, catchError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Reserva, EstadoReserva } from './entidades/reserva.entidad';
 import { CrearReservaDto } from './dto/crear-reserva.dto';
@@ -47,27 +47,40 @@ export class ReservasService {
     // 4. VALIDAR CLIENTE VÍA RABBITMQ (Comunicación asíncrona)
     this.logger.log(`📤 Enviando validación de cliente ${crearReservaDto.clienteId} vía RabbitMQ`);
     
+    let validacionCliente;
     try {
-      const validacionCliente = await firstValueFrom(
-        this.clientesService.send('validar_cliente', { clienteId: crearReservaDto.clienteId }).pipe(
-          timeout(5000) // Timeout de 5 segundos
+      validacionCliente = await firstValueFrom(
+        this.clientesService.send('validar_cliente', { id: crearReservaDto.clienteId }).pipe(
+          timeout(10000), // Aumentar timeout a 10 segundos
+          retry({
+            count: 3,     // Reintentar hasta 3 veces
+            delay: 2000,  // Esperar 2 segundos entre reintentos
+          }),
+          catchError((error) => {
+            this.logger.error(`❌ Error al validar cliente vía RabbitMQ: ${error.message}`);
+            
+            // Manejar timeout específicamente
+            if (error.name === 'TimeoutError') {
+              throw new BadRequestException(
+                'Servicio de validación de clientes no disponible. Por favor, intente más tarde.'
+              );
+            }
+            
+            throw new BadRequestException(`Error al validar cliente: ${error.message}`);
+          })
         )
       );
 
-      this.logger.log(`📥 Respuesta recibida de microservicio clientes:`, validacionCliente);
+      this.logger.log(`📥 Respuesta recibida de microservicio clientes: ${validacionCliente}`);
 
-      if (!validacionCliente.existe) {
-        throw new NotFoundException(`El cliente con ID ${crearReservaDto.clienteId} no existe`);
-      }
-
-      if (!validacionCliente.activo) {
-        throw new BadRequestException(`El cliente con ID ${crearReservaDto.clienteId} no está activo`);
+      if (!validacionCliente) {
+        throw new BadRequestException(`El cliente con ID ${crearReservaDto.clienteId} no existe o no está activo`);
       }
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
-      this.logger.error(`❌ Error al validar cliente vía RabbitMQ: ${error.message}`);
+      this.logger.error(`❌ Error fatal al validar cliente: ${error.message}`);
       throw new BadRequestException('Error al validar el cliente. Intente nuevamente.');
     }
 

@@ -51,12 +51,69 @@ export class ClientesController {
     return await this.clientesService.eliminarCliente(id);
   }
 
+  // ============================================================
+  // MessagePatterns para RabbitMQ (comunicación con API Gateway y Reservas)
+  // ============================================================
+
   /**
    * MessagePattern RabbitMQ: Validar existencia de cliente
-   * Este es el punto de comunicación asíncrona con el microservicio de reservas
+   * Usado por el microservicio de reservas
    */
   @MessagePattern('validar_cliente')
-  async validarCliente(@Payload() data: { clienteId: number }) {
-    return await this.clientesService.validarClienteExiste(data.clienteId);
+  async validarCliente(@Payload() data: { id: number }) {
+    console.log('📨 Mensaje RabbitMQ recibido - Pattern: validar_cliente');
+    console.log('📨 Payload:', data);
+    return await this.clientesService.validarClienteExiste(data.id);
+  }
+
+  /**
+   * MessagePattern RabbitMQ: Crear cliente
+   * Usado por el API Gateway
+   */
+  @MessagePattern('crear_cliente')
+  async crearClienteRabbitMQ(@Payload() crearClienteDto: CrearClienteDto) {
+    console.log('📨 Mensaje RabbitMQ recibido - Pattern: crear_cliente');
+    console.log('📨 Payload:', crearClienteDto);
+    return await this.clientesService.crearCliente(crearClienteDto);
+  }
+
+  /**
+   * MessagePattern RabbitMQ: Obtener todos los clientes
+   */
+  @MessagePattern('obtener_clientes')
+  async obtenerClientesRabbitMQ() {
+    console.log('📨 Mensaje RabbitMQ recibido - Pattern: obtener_clientes');
+    return await this.clientesService.obtenerTodosLosClientes();
+  }
+
+  /**
+   * MessagePattern RabbitMQ: Obtener cliente por ID
+   */
+  @MessagePattern('obtener_cliente_por_id')
+  async obtenerClientePorIdRabbitMQ(@Payload() data: { id: number }) {
+    console.log('📨 Mensaje RabbitMQ recibido - Pattern: obtener_cliente_por_id');
+    console.log('📨 ID:', data.id);
+    return await this.clientesService.obtenerClientePorId(data.id);
+  }
+
+  /**
+   * MessagePattern RabbitMQ: Actualizar cliente
+   */
+  @MessagePattern('actualizar_cliente')
+  async actualizarClienteRabbitMQ(@Payload() data: any) {
+    console.log('📨 Mensaje RabbitMQ recibido - Pattern: actualizar_cliente');
+    console.log('📨 Payload:', data);
+    const { id, ...actualizarClienteDto } = data;
+    return await this.clientesService.actualizarCliente(id, actualizarClienteDto);
+  }
+
+  /**
+   * MessagePattern RabbitMQ: Eliminar cliente
+   */
+  @MessagePattern('eliminar_cliente')
+  async eliminarClienteRabbitMQ(@Payload() data: { id: number }) {
+    console.log('📨 Mensaje RabbitMQ recibido - Pattern: eliminar_cliente');
+    console.log('📨 ID:', data.id);
+    return await this.clientesService.eliminarCliente(data.id);
   }
 }
