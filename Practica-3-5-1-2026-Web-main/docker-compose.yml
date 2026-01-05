@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # Redis - Para Idempotencia
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - microservicios-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Clientes (Puerto 3002 - Según requisitos del taller)
+  backend-clientes:
+    build:
+      context: ./apps/backend/clientes
+      dockerfile: Dockerfile
+    container_name: backend-clientes
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+    volumes:
+      - ./apps/backend/clientes/data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - microservicios-network
+    restart: unless-stopped
+
+  # Backend Reservas (Puerto interno 3003)
+  backend-reservas:
+    build:
+      context: ./apps/backend/reservas
+      dockerfile: Dockerfile
+    container_name: backend-reservas
+    ports:
+      - "3003:3003"
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MICROSERVICIO_CLIENTES_HOST: backend-clientes
+      MICROSERVICIO_CLIENTES_PORT: 3002
+    volumes:
+      - ./apps/backend/reservas/data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - microservicios-network
+    restart: unless-stopped
+
+  # MCP Server (Puerto 3001 - Según requisitos del taller)
+  mcp-server:
+    build:
+      context: ./apps/mcp-server
+      dockerfile: Dockerfile
+    container_name: mcp-server
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MICROSERVICIO_CLIENTES_HOST: backend-clientes
+      MICROSERVICIO_CLIENTES_PORT: 3002
+      MICROSERVICIO_RESERVAS_HOST: backend-reservas
+      MICROSERVICIO_RESERVAS_PORT: 3003
+    depends_on:
+      - backend-clientes
+      - backend-reservas
+    networks:
+      - microservicios-network
+    restart: unless-stopped
+
+  # API Gateway (Puerto 3000 - Según requisitos del taller)
+  api-gateway:
+    build:
+      context: ./apps/api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      MICROSERVICIO_CLIENTES_HOST: backend-clientes
+      MICROSERVICIO_CLIENTES_PORT: 3002
+      MICROSERVICIO_RESERVAS_HOST: backend-reservas
+      MICROSERVICIO_RESERVAS_PORT: 3003
+      # Configuración MCP + Gemini
+      MCP_SERVER_HOST: mcp-server
+      MCP_SERVER_PORT: 3001
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-pro}
+    depends_on:
+      - backend-clientes
+      - backend-reservas
+      - mcp-server
+    networks:
+      - microservicios-network
+    restart: unless-stopped
+
+networks:
+  microservicios-network:
+    driver: bridge
+
+volumes:
+  backend-clientes-data:
+  backend-reservas-data:

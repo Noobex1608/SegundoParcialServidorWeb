@@ -1,0 +1,1041 @@
+{
+	"info": {
+		"name": "Sistema de Reservas - Local de Eventos",
+		"description": "Colección completa de pruebas para EventCenter Premium\nSistema MCP + Gemini AI para reservas de eventos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1️⃣ Verificación de Servicios",
+			"item": [
+				{
+					"name": "Health Check - API Gateway",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/procesador/estado",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "procesador", "estado"]
+						}
+					}
+				},
+				{
+					"name": "Health Check - MCP Server",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/health",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["health"]
+						}
+					}
+				},
+				{
+					"name": "Listar Tools Disponibles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/tools",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["tools"]
+						}
+					}
+				},
+				{
+					"name": "Listar Clientes Existentes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/clientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["clientes"]
+						}
+					}
+				},
+				{
+					"name": "Listar Reservas Existentes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3003/reservas",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3003",
+							"path": ["reservas"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2️⃣ Crear Clientes - Organizadores de Eventos",
+			"item": [
+				{
+					"name": "Crear Cliente - TechCorp (Corporativo)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"TechCorp S.A.\",\n  \"email\": \"eventos@techcorp.com\",\n  \"telefono\": \"+57 300 456 7890\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3002/clientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["clientes"]
+						}
+					}
+				},
+				{
+					"name": "Crear Cliente - María González (Bodas)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Maria Gonzalez - Bodas Elegantes\",\n  \"email\": \"maria.bodas@gmail.com\",\n  \"telefono\": \"+57 301 789 4561\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3002/clientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["clientes"]
+						}
+					}
+				},
+				{
+					"name": "Crear Cliente - Carlos Méndez (Infantiles)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Carlos Mendez - Eventos Kids\",\n  \"email\": \"carlos.kids@eventos.com\",\n  \"telefono\": \"+57 302 234 5678\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3002/clientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["clientes"]
+						}
+					}
+				},
+				{
+					"name": "Crear Cliente - Universidad Nacional",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Universidad Nacional - Dept Eventos\",\n  \"email\": \"eventos@unacional.edu.co\",\n  \"telefono\": \"+57 303 890 1234\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3002/clientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["clientes"]
+						}
+					}
+				},
+				{
+					"name": "Crear Cliente - Restaurant El Gourmet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Restaurant El Gourmet\",\n  \"email\": \"reservas@elgourmet.com\",\n  \"telefono\": \"+57 304 567 8901\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3002/clientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["clientes"]
+						}
+					}
+				},
+				{
+					"name": "Crear Cliente - Ana Ramírez (Quinceañera)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ana Ramirez - Familia\",\n  \"email\": \"ana.ramirez@hotmail.com\",\n  \"telefono\": \"+57 305 123 4567\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3002/clientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["clientes"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3️⃣ MCP Server - JSON-RPC 2.0",
+			"item": [
+				{
+					"name": "Listar Tools (JSON-RPC)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"tools/list\",\n  \"id\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3001/rpc",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["rpc"]
+						}
+					}
+				},
+				{
+					"name": "Tool: buscar_cliente por ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"buscar_cliente\",\n    \"arguments\": {\n      \"id\": 1\n    }\n  },\n  \"id\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3001/rpc",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["rpc"]
+						}
+					}
+				},
+				{
+					"name": "Tool: buscar_cliente por nombre",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"buscar_cliente\",\n    \"arguments\": {\n      \"nombre\": \"TechCorp\"\n    }\n  },\n  \"id\": 3\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3001/rpc",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["rpc"]
+						}
+					}
+				},
+				{
+					"name": "Tool: validar_disponibilidad",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"validar_disponibilidad\",\n    \"arguments\": {\n      \"fechaReserva\": \"2026-03-15T09:00:00Z\",\n      \"duracionMinutos\": 480\n    }\n  },\n  \"id\": 4\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3001/rpc",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["rpc"]
+						}
+					}
+				},
+				{
+					"name": "Tool: crear_reserva (Conferencia)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"crear_reserva\",\n    \"arguments\": {\n      \"clienteId\": 1,\n      \"servicioNombre\": \"Conferencia Anual TechCorp - Salon Principal\",\n      \"fechaReserva\": \"2026-03-15T09:00:00Z\",\n      \"duracionMinutos\": 480,\n      \"notas\": \"Requiere proyector 4K, sonido profesional y coffee break para 150 personas\"\n    }\n  },\n  \"id\": 5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3001/rpc",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["rpc"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4️⃣ Gemini AI - Lenguaje Natural",
+			"item": [
+				{
+					"name": "🔍 Búsquedas",
+					"item": [
+						{
+							"name": "Buscar TechCorp",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Busca el cliente TechCorp\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Buscar organizadora de bodas",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Dame la información del cliente con email maria.bodas@gmail.com\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Buscar clientes de bodas",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Muéstrame todos los clientes que organizan bodas\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "✅ Validar Disponibilidad",
+					"item": [
+						{
+							"name": "Disponibilidad para evento corporativo",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Está disponible el salón para el 15 de marzo de 2026 desde las 9 AM?\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Disponibilidad para boda (sábado)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Tenemos disponible el salón principal para una boda el sábado 20 de abril de 2026?\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Disponibilidad evento nocturno",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Puedo reservar para una fiesta el viernes 10 de mayo a las 8 PM?\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🎉 Crear Reservas de Eventos",
+					"item": [
+						{
+							"name": "Reserva - Conferencia TechCorp",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Crea una reserva para TechCorp para su conferencia anual el 15 de marzo de 2026 desde las 9 AM por 8 horas\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Reserva - Boda Elegante",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Necesito reservar el salón principal para la boda de Maria Gonzalez el sábado 20 de abril de 2026 de 6 PM a 2 AM\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Reserva - Fiesta Infantil",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Quiero agendar una fiesta de cumpleaños infantil para Carlos Mendez el 8 de mayo de 2026 a las 3 PM por 4 horas con decoración de superhéroes\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Reserva - Graduación Universitaria",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Reserva el salón para ceremonia de graduación de Universidad Nacional el 30 de junio de 2026 desde las 10 AM hasta las 4 PM\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Reserva - Cena Ejecutiva",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"El Restaurant El Gourmet necesita el salón VIP para cena ejecutiva el viernes 15 de febrero de 2026 a las 8 PM por 3 horas\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Reserva - Quinceañera",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Hola, quiero reservar para la quinceañera de Ana Ramirez el sábado 25 de julio de 2026 desde las 7 PM con temática de princesas\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🔥 Consultas Complejas",
+					"item": [
+						{
+							"name": "Consulta - Eventos de TechCorp",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Cuántos eventos tiene programados TechCorp?\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Consulta + Reserva inmediata",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Hay espacio libre el 25 de marzo de 2026? Si está disponible, reserva para Maria Gonzalez a las 6 PM por 8 horas\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "Consulta general sobre capacidad",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Necesito organizar un evento para 200 personas, tienen capacidad?\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "5️⃣ Casos de Uso Completos",
+			"item": [
+				{
+					"name": "CASO 1: Boda Elegante (Completo)",
+					"item": [
+						{
+							"name": "1. Crear Cliente - Isabella Martinez",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nombre\": \"Isabella Martinez - Bodas de Ensueño\",\n  \"email\": \"isabella.bodas@premium.com\",\n  \"telefono\": \"+57 320 888 9999\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3002/clientes",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3002",
+									"path": ["clientes"]
+								}
+							}
+						},
+						{
+							"name": "2. Buscar Cliente Isabella",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Busca a Isabella Martinez\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "3. Validar Disponibilidad para Boda",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Está disponible el salón principal para el sábado 10 de mayo de 2026 todo el día?\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "4. Crear Reserva de Boda Completa",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Reserva el salón para Isabella Martinez para una boda elegante el 10 de mayo de 2026 desde las 5 PM por 10 horas con decoración floral y menú gourmet\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "5. Verificar Reserva Creada",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3003/reservas",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3003",
+									"path": ["reservas"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "CASO 2: Conferencia Corporativa",
+					"item": [
+						{
+							"name": "1. Crear Cliente - GlobalTech",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nombre\": \"GlobalTech Industries\",\n  \"email\": \"eventos@globaltech.com\",\n  \"telefono\": \"+57 310 777 8888\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3002/clientes",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3002",
+									"path": ["clientes"]
+								}
+							}
+						},
+						{
+							"name": "2. Consulta y Validación (IA)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"GlobalTech Industries necesita realizar su conferencia anual. Tienen disponible el 20 de septiembre de 2026?\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						},
+						{
+							"name": "3. Crear Reserva Conferencia",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mensaje\": \"Reserva para GlobalTech su conferencia anual el 20 de septiembre de 2026 desde las 8 AM por 10 horas, requieren proyector 4K, sistema de sonido profesional y servicio de catering para 150 personas\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/procesador",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "procesador"]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "6️⃣ Pruebas de Idempotencia",
+			"item": [
+				{
+					"name": "Crear Reserva con Idempotencia (1era vez)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Idempotency-Key",
+								"value": "boda-premium-001"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 2,\n  \"servicioNombre\": \"Boda Premium - Salon Cristal\",\n  \"fechaReserva\": \"2026-06-15T18:00:00Z\",\n  \"duracionMinutos\": 600\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3003/reservas",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3003",
+							"path": ["reservas"]
+						}
+					}
+				},
+				{
+					"name": "Repetir Misma Reserva (debe retornar misma respuesta)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Idempotency-Key",
+								"value": "boda-premium-001"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 2,\n  \"servicioNombre\": \"Boda Premium - Salon Cristal\",\n  \"fechaReserva\": \"2026-06-15T18:00:00Z\",\n  \"duracionMinutos\": 600\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3003/reservas",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3003",
+							"path": ["reservas"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "7️⃣ Manejo de Errores",
+			"item": [
+				{
+					"name": "Error - Cliente Inexistente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"mensaje\": \"Busca al cliente Eventos Fantasma S.A.\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/procesador",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "procesador"]
+						}
+					}
+				},
+				{
+					"name": "Error - Fecha Pasada",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"mensaje\": \"Quiero reservar el salón para TechCorp el 1 de enero de 2020\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/procesador",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "procesador"]
+						}
+					}
+				},
+				{
+					"name": "Error - Tool Inexistente (JSON-RPC)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"cancelar_evento\",\n    \"arguments\": {}\n  },\n  \"id\": 99\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3001/rpc",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["rpc"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
+
