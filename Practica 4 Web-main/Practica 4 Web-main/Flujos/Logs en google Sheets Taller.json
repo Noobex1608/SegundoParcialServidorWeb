@@ -1,0 +1,141 @@
+{
+  "name": "Logs en google Sheets Taller",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "uleam-evento",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        0
+      ],
+      "id": "5487da27-1ff6-4490-9234-875b0eb3462b",
+      "name": "Webhook",
+      "webhookId": "944679d8-6830-44d0-b02d-d0816a3f36dd"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1p8JzkJ22kbvC904Xvur5cCk77bV_Q9yMY1y84hcENdQ",
+          "mode": "list",
+          "cachedResultName": "Registro_Reservas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p8JzkJ22kbvC904Xvur5cCk77bV_Q9yMY1y84hcENdQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p8JzkJ22kbvC904Xvur5cCk77bV_Q9yMY1y84hcENdQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $json.body.data.fechaReserva }}",
+            "Evento": "={{ $json.body.evento }}",
+            "Cliente ID": "={{ $json.body.data.clienteId }}",
+            "ID Reserva": "={{ $json.body.data.id }}",
+            "Mensaje": "={{ $json.body.data.mensaje }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Evento",
+              "displayName": "Evento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID Reserva",
+              "displayName": "ID Reserva",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cliente ID",
+              "displayName": "Cliente ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensaje",
+              "displayName": "Mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "cfc2c500-504f-4f2f-b36b-16f6809c7d4a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qpVAYDfQdBKFUBab",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "a3a8cb7c-d62e-42c1-8daa-fb1f9359ef64",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c3873e0765ce8b7c47202834cb281b6225c0fa4945ed5b51adf055a55dfa02bd"
+  },
+  "id": "SxpZDlIFRINugvBWqqcce",
+  "tags": []
+}

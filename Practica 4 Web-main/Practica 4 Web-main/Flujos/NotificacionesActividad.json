@@ -1,0 +1,129 @@
+{
+  "name": "NotificacionesActividad",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "35bc4268-278a-4987-9cf9-b3f14ee7bcfe",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "uleam-evento",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3d48da7c-0fee-42bc-9239-035a4439dbe4",
+      "name": "Webhook",
+      "webhookId": "944679d8-6830-44d0-b02d-d0816a3f36dd"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=\"Actúa como el asistente virtual de la Universidad. Se ha confirmado una nueva reserva con los siguientes datos:\n\nCliente ID: {{ $json.body.data.clienteId }}\n\n\n\nID Reserva: {{ $json.body.data.id }}\n\nRedacta un mensaje corto, formal y amable para notificar al administrador por Telegram sobre esta nueva cita. No uses saludos genéricos, ve al grano.\""
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "6e963adc-e450-467a-b554-551f34b53413",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "xrN2f0bEloub4QG2",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7616000600",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "e397f4e0-5a4f-4e3f-9094-e4f67a1438bd",
+      "name": "Send a text message",
+      "webhookId": "a4b1792c-9014-401a-9eac-7d08997f7776",
+      "credentials": {
+        "telegramApi": {
+          "id": "HtguCv2DbQjh3GdW",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "9564ee7c-1ebe-4e3a-8bdb-1802fa57fe03",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c3873e0765ce8b7c47202834cb281b6225c0fa4945ed5b51adf055a55dfa02bd"
+  },
+  "id": "PTmi_5WeukyulRJsL6Gj-",
+  "tags": []
+}

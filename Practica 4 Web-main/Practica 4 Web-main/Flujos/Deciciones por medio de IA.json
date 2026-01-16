@@ -1,0 +1,263 @@
+{
+  "name": "Deciciones por medio de IA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "uleam-evento",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        16
+      ],
+      "id": "862b218e-4e96-412b-949a-4916315f4693",
+      "name": "Webhook",
+      "webhookId": "944679d8-6830-44d0-b02d-d0816a3f36dd"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=\"Analiza los siguientes datos del evento: \nEvento: {{ $json.body }}\nMensaje:{{ $json.body.data.mensaje }}\nReglas de decisión:\nSOLO Si el evento es 'reserva.cancelada', la urgencia es: ALTA\nSi es 'reserva.modificada', la urgencia es: MEDIA\nSi es 'reserva.confirmada' u otro caso positivo, la urgencia es: BAJA\nTu respuesta debe ser SOLAMENTE una palabra: ALTA, MEDIA o BAJA. No añadas nada más.\""
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        16
+      ],
+      "id": "97b63862-d454-4861-aee0-2710039f908f",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "xrN2f0bEloub4QG2",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.content.parts[0].text }}",
+                    "rightValue": "=ALTA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "88c23f52-9e33-4057-9cdd-257673a795b8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Alta"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6962c0c4-bb81-405c-a813-23af12ab6ba0",
+                    "leftValue": "={{ $json.content.parts[0].text }}",
+                    "rightValue": "MEDIA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Media"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4d8f56ea-bc77-41ea-b91e-48efd757de05",
+                    "leftValue": "={{ $json.content.parts[0].text }}",
+                    "rightValue": "BAJA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Baja"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        16
+      ],
+      "id": "d861e235-e875-4f86-9e2c-5f1ad12cc32b",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "7616000600",
+        "text": "=🚨 ALERTA CRÍTICA: Se ha detectado un evento urgente:{{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        -128
+      ],
+      "id": "b517c35b-f66c-4661-b732-0f7c1a3c710a",
+      "name": "Send a text message",
+      "webhookId": "a4b1792c-9014-401a-9eac-7d08997f7776",
+      "credentials": {
+        "telegramApi": {
+          "id": "HtguCv2DbQjh3GdW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "steve.maga1608@gmail.com",
+        "subject": "Alerta Media del Sistema",
+        "message": "Hey cuidado con esto",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        48
+      ],
+      "id": "6409c04e-fd50-4545-a839-d4231f2ef44c",
+      "name": "Send a message",
+      "webhookId": "e8c33878-434d-4140-8d07-a80a2df62630",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "SnhGBiaIWTSYrFjE",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('Evento normal procesado'); \n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        240
+      ],
+      "id": "4f274d67-3617-42ef-8a9e-7b0e721be25b",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "77b22890-d036-4280-abae-68248abc0bb2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c3873e0765ce8b7c47202834cb281b6225c0fa4945ed5b51adf055a55dfa02bd"
+  },
+  "id": "kTzkFQOnfhfo90VVO0c3f",
+  "tags": []
+}
