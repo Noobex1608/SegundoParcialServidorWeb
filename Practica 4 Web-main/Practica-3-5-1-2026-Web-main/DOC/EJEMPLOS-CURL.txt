@@ -1,0 +1,649 @@
+═══════════════════════════════════════════════════════════════════
+  🎉 EJEMPLOS DE PRUEBAS - SISTEMA DE RESERVAS PARA LOCAL DE EVENTOS
+  🎊 Sistema MCP + Gemini AI
+═══════════════════════════════════════════════════════════════════
+
+📋 ÍNDICE:
+  1. Verificación de Servicios
+  2. Crear Clientes (REST Directo) - Organizadores de Eventos
+  3. Probar MCP Server (JSON-RPC)
+  4. Probar con Gemini AI (Lenguaje Natural)
+  5. Casos de Uso Completos - Eventos Reales
+
+═══════════════════════════════════════════════════════════════════
+  1️⃣  VERIFICACIÓN DE SERVICIOS
+═══════════════════════════════════════════════════════════════════
+
+# 1.1 Verificar API Gateway
+curl http://localhost:3000/api/procesador/estado
+
+# 1.2 Verificar MCP Server
+curl http://localhost:3001/health
+
+# 1.3 Listar Tools disponibles
+curl http://localhost:3001/tools
+
+# 1.4 Ver clientes existentes
+curl http://localhost:3002/clientes
+
+# 1.5 Ver reservas existentes
+curl http://localhost:3003/reservas
+
+
+═══════════════════════════════════════════════════════════════════
+  2️⃣  CREAR CLIENTES (REST DIRECTO) - ORGANIZADORES DE EVENTOS
+═══════════════════════════════════════════════════════════════════
+
+# 2.1 Crear Cliente: Corporación TechCorp (Eventos Corporativos)
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"TechCorp S.A.\",\"email\":\"eventos@techcorp.com\",\"telefono\":\"+57 300 456 7890\"}"
+
+# 2.2 Crear Cliente: María González (Organizadora de Bodas)
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"Maria Gonzalez - Bodas Elegantes\",\"email\":\"maria.bodas@gmail.com\",\"telefono\":\"+57 301 789 4561\"}"
+
+# 2.3 Crear Cliente: Carlos Méndez (Fiestas Infantiles)
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"Carlos Mendez - Eventos Kids\",\"email\":\"carlos.kids@eventos.com\",\"telefono\":\"+57 302 234 5678\"}"
+
+# 2.4 Crear Cliente: Universidad Nacional (Graduaciones)
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"Universidad Nacional - Dept Eventos\",\"email\":\"eventos@unacional.edu.co\",\"telefono\":\"+57 303 890 1234\"}"
+
+# 2.5 Crear Cliente: Restaurant El Gourmet (Cenas Privadas)
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"Restaurant El Gourmet\",\"email\":\"reservas@elgourmet.com\",\"telefono\":\"+57 304 567 8901\"}"
+
+# 2.6 Crear Cliente: Ana Ramírez (Quinceañera)
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"Ana Ramirez - Familia\",\"email\":\"ana.ramirez@hotmail.com\",\"telefono\":\"+57 305 123 4567\"}"
+
+
+═══════════════════════════════════════════════════════════════════
+  3️⃣  PROBAR MCP SERVER (JSON-RPC 2.0)
+═══════════════════════════════════════════════════════════════════
+
+# 3.1 Listar Tools via JSON-RPC
+curl -X POST http://localhost:3001/rpc ^
+  -H "Content-Type: application/json" ^
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":1}"
+
+# 3.2 Ejecutar Tool: buscar_cliente por ID
+curl -X POST http://localhost:3001/rpc ^
+  -H "Content-Type: application/json" ^
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"buscar_cliente\",\"arguments\":{\"id\":1}},\"id\":2}"
+
+# 3.3 Ejecutar Tool: buscar_cliente por nombre
+curl -X POST http://localhost:3001/rpc ^
+  -H "Content-Type: application/json" ^
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"buscar_cliente\",\"arguments\":{\"nombre\":\"Juan\"}},\"id\":3}"
+
+# 3.4 Ejecutar Tool: buscar_cliente por email
+curl -X POST http://localhost:3001/rpc ^
+  -H "Content-Type: application/json" ^
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"buscar_cliente\",\"arguments\":{\"email\":\"maria.garcia@ejemplo.com\"}},\"id\":4}"
+
+# 3.5 Ejecutar Tool: validar_disponibilidad
+curl -X POST http://localhost:3001/rpc ^
+  -H "Content-Type: application/json" ^
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"validar_disponibilidad\",\"arguments\":{\"fechaReserva\":\"2026-01-30T10:00:00Z\",\"duracionMinutos\":60}},\"id\":5}"
+
+# 3.6 Ejecutar Tool: crear_reserva (Evento Corporativo)
+curl -X POST http://localhost:3001/rpc ^
+  -H "Content-Type: application/json" ^
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"crear_reserva\",\"arguments\":{\"clienteId\":1,\"servicioNombre\":\"Conferencia Anual TechCorp - Salon Principal\",\"fechaReserva\":\"2026-03-15T09:00:00Z\",\"duracionMinutos\":480,\"notas\":\"Requiere proyector, sonido profesional y coffee break\"}},\"id\":6}"
+
+
+═══════════════════════════════════════════════════════════════════
+  4️⃣  PROBAR CON GEMINI AI (LENGUAJE NATURAL)
+═══════════════════════════════════════════════════════════════════
+
+⚠️  IMPORTANTE: Debes configurar tu GEMINI_API_KEY en el archivo .env
+   1. Obtén tu API Key en: https://aistudio.google.com/app/apikey
+   2. Edita .env y reemplaza: GEMINI_API_KEY=tu_api_key_real
+   3. Reinicia: docker-compose restart api-gateway
+
+───────────────────────────────────────────────────────────────────
+  4.1 BUSCAR CLIENTES ORGANIZADORES (Tool: buscar_cliente)
+───────────────────────────────────────────────────────────────────
+
+# Buscar empresa corporativa
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Busca el cliente TechCorp\"}"
+
+# Buscar organizadora de bodas por email
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Dame la información del cliente con email maria.bodas@gmail.com\"}"
+
+# Buscar clientes de eventos infantiles
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Muéstrame todos los clientes relacionados con eventos infantiles\"}"
+
+# Buscar institución educativa
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Quién es el cliente Universidad Nacional?\"}"
+
+# Buscar por tipo de evento
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Busca clientes que organizan bodas\"}"
+
+
+───────────────────────────────────────────────────────────────────
+  4.2 VALIDAR DISPONIBILIDAD DEL SALÓN (Tool: validar_disponibilidad)
+───────────────────────────────────────────────────────────────────
+
+# Validar disponibilidad para evento corporativo
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Está disponible el salón para el 15 de marzo de 2026 desde las 9 AM?\"}"
+
+# Validar fecha para boda (todo el día)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Tenemos disponible el salón principal para una boda el sábado 20 de abril de 2026?\"}"
+
+# Validar fin de semana
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Hay disponibilidad para el próximo sábado por la noche?\"}"
+
+# Validar evento nocturno
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Puedo reservar para una fiesta el viernes 10 de mayo a las 8 PM?\"}"
+
+# Validar graduación
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Verificar si está libre el 30 de junio de 2026 para ceremonia de graduación desde las 10 AM\"}"
+
+
+───────────────────────────────────────────────────────────────────
+  4.3 CREAR RESERVAS DE EVENTOS (Tool: crear_reserva)
+───────────────────────────────────────────────────────────────────
+
+# Reserva de conferencia corporativa
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Crea una reserva para TechCorp para su conferencia anual el 15 de marzo de 2026 desde las 9 AM por 8 horas\"}"
+
+# Reserva de boda elegante
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Necesito reservar el salón principal para la boda de Maria Gonzalez el sábado 20 de abril de 2026 de 6 PM a 2 AM\"}"
+
+# Reserva de fiesta infantil
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Quiero agendar una fiesta de cumpleaños infantil para Carlos Mendez el 8 de mayo de 2026 a las 3 PM por 4 horas con decoración de superhéroes\"}"
+
+# Reserva de graduación universitaria
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Reserva el salón para ceremonia de graduación de Universidad Nacional el 30 de junio de 2026 desde las 10 AM hasta las 4 PM\"}"
+
+# Reserva de cena privada empresarial
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"El Restaurant El Gourmet necesita el salón VIP para cena ejecutiva el viernes 15 de febrero de 2026 a las 8 PM por 3 horas\"}"
+
+# Reserva de quinceañera
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Hola, quiero reservar para la quinceañera de Ana Ramirez el sábado 25 de julio de 2026 desde las 7 PM con temática de princesas\"}"
+
+# Evento de networking
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Agendar evento de networking empresarial para TechCorp el jueves 10 de abril de 2026 de 6 PM a 10 PM\"}"
+
+
+───────────────────────────────────────────────────────────────────
+  4.4 CONSULTAS COMPLEJAS - MÚLTIPLES EVENTOS (Múltiples Tools)
+───────────────────────────────────────────────────────────────────
+
+# Gemini ejecutará buscar_cliente + consultar reservas
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Cuántos eventos tiene programados TechCorp?\"}"
+
+# Gemini ejecutará buscar_cliente + validar_disponibilidad + crear_reserva
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Quiero reservar un salón para evento corporativo de maria.bodas@gmail.com el 25 de marzo de 2026 desde las 6 PM\"}"
+
+# Consulta sobre disponibilidad y reserva inmediata
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Hay espacio libre este sábado para una boda? Si está disponible, reserva para Maria Gonzalez a las 5 PM por 8 horas\"}"
+
+# Consulta general sobre eventos
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Hola, necesito organizar una fiesta de 15 años para el próximo mes, qué disponibilidad tienen?\"}"
+
+# Buscar cliente y crear evento específico
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Para el cliente Restaurant El Gourmet, necesito reservar una cena de gala el 14 de febrero de 2026 a las 8 PM\"}"
+
+# Validar múltiples fechas
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"La Universidad Nacional necesita confirmar si tienen disponible el salón para graduación el 30 de junio, si no está libre, qué otra fecha en junio recomiendan?\"}"
+
+
+═══════════════════════════════════════════════════════════════════
+  5️⃣  CASOS DE USO COMPLETOS
+═══════════════════════════════════════════════════════════════════
+
+───────────────────────────────────────────────────────────────────
+  CASO 1: Flujo Completo - Boda Elegante
+───────────────────────────────────────────────────────────────────
+
+# Paso 1: Crear cliente organizador de bodas
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"Isabella Martinez - Bodas de Ensueño\",\"email\":\"isabella.bodas@premium.com\",\"telefono\":\"+57 320 888 9999\"}"
+
+# Paso 2: Buscar cliente (con IA)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Busca a Isabella Martinez\"}"
+
+# Paso 3: Validar disponibilidad para boda (con IA)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Está disponible el salón principal para el sábado 10 de mayo de 2026 todo el día?\"}"
+
+# Paso 4: Crear reserva completa de boda (con IA - ejecuta 3 tools)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Reserva el salón para Isabella Martinez para una boda elegante el 10 de mayo de 2026 desde las 5 PM por 10 horas con decoración floral y menú gourmet\"}"
+
+# Paso 5: Verificar reserva creada
+curl http://localhost:3003/reservas
+
+
+───────────────────────────────────────────────────────────────────
+  CASO 2: Evento Corporativo - Conferencia Anual
+───────────────────────────────────────────────────────────────────
+
+# Paso 1: Crear empresa cliente
+curl -X POST http://localhost:3002/clientes ^
+  -H "Content-Type: application/json" ^
+  -d "{\"nombre\":\"GlobalTech Industries\",\"email\":\"eventos@globaltech.com\",\"telefono\":\"+57 310 777 8888\"}"
+
+# Paso 2: Consulta compleja con IA (busca cliente y valida)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"GlobalTech Industries necesita realizar su conferencia anual. Tienen disponible el 20 de septiembre de 2026?\"}"
+
+# Paso 3: Crear reserva de conferencia (con IA)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Reserva para GlobalTech su conferencia anual el 20 de septiembre de 2026 desde las 8 AM por 10 horas, requieren proyector 4K, sistema de sonido profesional y servicio de catering para 150 personas\"}"
+
+# Paso 4: Verificar la reserva
+curl http://localhost:3003/reservas
+
+
+───────────────────────────────────────────────────────────────────
+  CASO 3: Probar Idempotencia (Prevención de Duplicados)
+───────────────────────────────────────────────────────────────────
+
+# Crear reserva con clave de idempotencia
+curl -X POST http://localhost:3003/reservas ^
+  -H "Content-Type: application/json" ^
+  -H "X-Idempotency-Key: boda-premium-001" ^
+  -d "{\"clienteId\":2,\"servicioNombre\":\"Boda Premium - Salon Cristal\",\"fechaReserva\":\"2026-06-15T18:00:00Z\",\"duracionMinutos\":600}"
+
+# Ejecutar EXACTAMENTE el mismo comando otra vez
+# Deberías recibir la MISMA respuesta sin crear una nueva reserva
+curl -X POST http://localhost:3003/reservas ^
+  -H "Content-Type: application/json" ^
+  -H "X-Idempotency-Key: boda-premium-001" ^
+  -d "{\"clienteId\":2,\"servicioNombre\":\"Boda Premium - Salon Cristal\",\"fechaReserva\":\"2026-06-15T18:00:00Z\",\"duracionMinutos\":600}"
+
+
+───────────────────────────────────────────────────────────────────
+  CASO 4: Fiesta de Quinceañera
+───────────────────────────────────────────────────────────────────
+
+# Flujo completo con lenguaje natural
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Hola, soy la mamá de Sofía y quiero organizar su fiesta de 15 años para el 18 de agosto de 2026. Necesito el salón desde las 7 PM y calculamos unas 6 horas. Vamos a tener música en vivo y queremos decoración en tonos rosado y dorado\"}"
+
+
+───────────────────────────────────────────────────────────────────
+  CASO 5: Manejo de Errores
+───────────────────────────────────────────────────────────────────
+
+# Error: Cliente inexistente
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Busca al cliente Eventos Fantasma S.A.\"}"
+
+# Error: Fecha pasada
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Quiero reservar el salón para TechCorp el 1 de enero de 2020\"}"
+
+# Error: Conflicto de fechas (intenta reservar fecha ya ocupada)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Verifica si el 15 de marzo de 2026 está disponible a las 9 AM\"}"
+
+# Error: Tool inexistente (JSON-RPC)
+curl -X POST http://localhost:3001/rpc ^
+  -H "Content-Type: application/json" ^
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"cancelar_evento\",\"arguments\":{}},\"id\":99}"
+
+
+═══════════════════════════════════════════════════════════════════
+  📊 VERIFICAR LOGS
+═══════════════════════════════════════════════════════════════════
+
+# Ver logs de todos los servicios
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f api-gateway
+docker-compose logs -f mcp-server
+docker-compose logs -f backend-clientes
+docker-compose logs -f backend-reservas
+
+# Ver últimas 50 líneas
+docker-compose logs --tail=50 api-gateway
+
+
+═══════════════════════════════════════════════════════════════════
+  🔧 COMANDOS DOCKER ÚTILES
+═══════════════════════════════════════════════════════════════════
+
+# Ver estado de contenedores
+docker-compose ps
+
+# Reiniciar un servicio
+docker-compose restart api-gateway
+
+# Reiniciar todos los servicios
+docker-compose restart
+
+# Detener todos los servicios
+docker-compose down
+
+# Reconstruir e iniciar
+docker-compose up --build -d
+
+# Limpiar todo (incluye volúmenes y bases de datos)
+docker-compose down -v
+
+
+═══════════════════════════════════════════════════════════════════
+  🎭 EJEMPLOS ADICIONALES - ESCENARIOS REALISTAS
+═══════════════════════════════════════════════════════════════════
+
+# Consulta sobre capacidad del salón
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Necesito organizar un evento para 200 personas, tienen capacidad?\"}"
+
+# Consulta sobre servicios adicionales
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Para mi boda necesito saber si incluyen decoración, sonido y catering\"}"
+
+# Reserva urgente de último minuto
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Urgente! Necesito el salón para mañana por la noche, hay disponibilidad?\"}"
+
+# Consulta sobre cancelaciones
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Cuál es su política de cancelación de eventos?\"}"
+
+# Reserva de evento híbrido (presencial + virtual)
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"GlobalTech necesita el salón para webinar híbrido el 5 de abril de 2026, requieren streaming en vivo y cámaras profesionales\"}"
+
+# Evento de múltiples días
+curl -X POST http://localhost:3000/api/procesador ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mensaje\":\"Universidad Nacional necesita reservar para congreso académico del 10 al 12 de octubre de 2026, de 8 AM a 6 PM cada día\"}"
+
+
+═══════════════════════════════════════════════════════════════════
+  ✅ CHECKLIST DE VERIFICACIÓN - LOCAL DE EVENTOS
+═══════════════════════════════════════════════════════════════════
+
+SERVICIOS:
+□ Todos los servicios están corriendo (5 contenedores)
+□ API Gateway responde en http://localhost:3000
+□ MCP Server responde en http://localhost:3001
+□ Backend Clientes responde en http://localhost:3002
+□ Backend Reservas responde en http://localhost:3003
+□ Redis está funcionando en puerto 6379
+
+CLIENTES:
+□ Puedo crear organizadores de eventos vía REST
+□ Puedo buscar clientes corporativos
+□ Puedo buscar organizadores de bodas
+□ Puedo buscar clientes particulares
+
+FUNCIONALIDAD MCP:
+□ Puedo listar los 3 Tools del MCP Server
+□ JSON-RPC 2.0 funciona correctamente
+□ Tool buscar_cliente funciona
+□ Tool validar_disponibilidad funciona
+□ Tool crear_reserva funciona
+
+GEMINI AI:
+□ GEMINI_API_KEY está configurada en .env
+□ Gemini interpreta lenguaje natural correctamente
+□ Gemini ejecuta Tools individuales
+□ Gemini ejecuta múltiples Tools en secuencia
+□ Gemini maneja errores apropiadamente
+
+EVENTOS:
+□ Puedo crear reserva de boda
+□ Puedo crear reserva de evento corporativo
+□ Puedo crear reserva de quinceañera
+□ Puedo crear reserva de graduación
+□ Idempotencia previene reservas duplicadas
+□ Validación de fechas funciona correctamente
+□ Los logs muestran el flujo completo
+
+
+═══════════════════════════════════════════════════════════════════
+  🎓 PARA LA DEMOSTRACIÓN - LOCAL DE EVENTOS
+═══════════════════════════════════════════════════════════════════
+
+ESCENARIO: "EventCenter Premium" - Local de eventos para bodas, 
+           conferencias, quinceañeras, graduaciones y fiestas
+
+1. Mostrar arquitectura (README.md líneas 17-43)
+2. Verificar servicios: docker-compose ps
+3. Crear clientes organizadores (Sección 2):
+   - Empresa corporativa (TechCorp)
+   - Organizadora de bodas (María González)
+   - Cliente de quinceañera (Ana Ramírez)
+4. Mostrar Tools del MCP: curl http://localhost:3001/tools
+5. Demo búsqueda de organizadores (Sección 4.1)
+6. Demo validación de disponibilidad del salón (Sección 4.2)
+7. Demo reserva completa de evento (Sección 4.3)
+8. Demo flujo completo: Boda Elegante (Caso 1)
+9. Demo evento corporativo: Conferencia (Caso 2)
+10. Mostrar logs: docker-compose logs --tail=30 mcp-server
+11. Verificar eventos creados: curl http://localhost:3003/reservas
+12. Explicar cumplimiento de rúbrica (100/100 puntos)
+
+TIPOS DE EVENTOS SOPORTADOS:
+• Bodas y recepciones
+• Conferencias corporativas
+• Quinceañeras
+• Graduaciones
+• Fiestas infantiles
+• Cenas de gala
+• Eventos de networking
+• Celebraciones privadas
+
+
+═══════════════════════════════════════════════════════════════════
+  🚨 SOLUCIÓN DE PROBLEMAS - LOCAL DE EVENTOS
+═══════════════════════════════════════════════════════════════════
+
+Problema: "GEMINI_API_KEY no configurada"
+Solución: 
+  1. Obtén API Key en: https://aistudio.google.com/app/apikey
+  2. Edita .env: GEMINI_API_KEY=tu_clave_real
+  3. docker-compose restart api-gateway
+
+Problema: "No se pudo conectar con el MCP Server"
+Solución:
+  1. Verificar: docker ps (mcp-server debe estar corriendo)
+  2. Ver logs: docker-compose logs mcp-server
+  3. Reiniciar: docker-compose restart mcp-server
+
+Problema: "Cliente no encontrado" al crear evento
+Solución:
+  1. Verificar clientes: curl http://localhost:3002/clientes
+  2. Crear cliente primero (Sección 2)
+  3. Luego crear la reserva del evento
+
+Problema: "Fecha no disponible" - Conflicto de eventos
+Solución:
+  1. Validar disponibilidad primero
+  2. Elegir otra fecha u horario
+  3. Consultar eventos existentes: curl http://localhost:3003/reservas
+
+Problema: Contenedor no inicia
+Solución:
+  1. Ver error: docker-compose logs [servicio]
+  2. Detener todo: docker-compose down
+  3. Reconstruir: docker-compose up --build -d
+
+Problema: Puerto ya en uso (3000-3003, 6379)
+Solución:
+  1. Detener: docker-compose down
+  2. Cerrar apps en esos puertos
+  3. Iniciar: docker-compose up -d
+
+Problema: Redis desconectado
+Solución:
+  1. Verificar: docker-compose ps redis
+  2. Ver logs: docker-compose logs redis
+  3. Reiniciar: docker-compose restart redis
+
+Problema: Error de idempotencia
+Solución:
+  1. Verificar Redis está corriendo
+  2. Usar header: X-Idempotency-Key único
+  3. Ver logs del backend-reservas
+
+
+═══════════════════════════════════════════════════════════════════
+  📚 RECURSOS ADICIONALES
+═══════════════════════════════════════════════════════════════════
+
+DOCUMENTACIÓN DEL PROYECTO:
+• README.md - Documentación completa del proyecto
+• DOC/0-RESUMEN-GENERAL.md - Resumen de arquitectura
+• DOC/1-API-GATEWAY.md - Documentación del Gateway
+• DOC/2-MCP-SERVER.md - Documentación del MCP Server
+• DOC/3-BACKEND-CLIENTES.md - Microservicio de clientes
+• DOC/4-BACKEND-RESERVAS.md - Microservicio de reservas
+• docker-compose.yml - Configuración de servicios
+
+RECURSOS EXTERNOS:
+• Gemini AI Studio: https://aistudio.google.com
+• MCP Documentation: https://modelcontextprotocol.io
+• JSON-RPC 2.0 Spec: https://www.jsonrpc.org/specification
+• NestJS Documentation: https://nestjs.com
+• TypeORM Guide: https://typeorm.io
+
+
+═══════════════════════════════════════════════════════════════════
+  🎉 INFORMACIÓN DEL LOCAL DE EVENTOS - "EventCenter Premium"
+═══════════════════════════════════════════════════════════════════
+
+CAPACIDAD Y SERVICIOS:
+• Salón Principal: Hasta 300 personas
+• Salón VIP: Hasta 100 personas
+• Terraza: Hasta 150 personas
+• Estacionamiento: 80 vehículos
+• Catering in-house disponible
+• Decoración personalizada
+• Sistema de sonido profesional
+• Iluminación LED inteligente
+• Proyector 4K y pantallas
+• WiFi de alta velocidad
+• Aire acondicionado
+• Acceso para personas con discapacidad
+
+TIPOS DE EVENTOS QUE MANEJAMOS:
+✓ Bodas y recepciones elegantes
+✓ Conferencias y seminarios corporativos
+✓ Quinceañeras temáticas
+✓ Graduaciones universitarias
+✓ Fiestas infantiles con animación
+✓ Cenas de gala y eventos benéficos
+✓ Lanzamientos de productos
+✓ Eventos de networking empresarial
+✓ Celebraciones privadas
+✓ Congresos y convenciones
+
+HORARIOS DE OPERACIÓN:
+• Lunes a Viernes: 8:00 AM - 2:00 AM
+• Sábados: 24 horas
+• Domingos: 8:00 AM - 12:00 AM
+
+POLÍTICA DE RESERVAS:
+• Reserva mínima: 4 horas
+• Anticipo: 30% al momento de reservar
+• Cancelación: Con 15 días de anticipación
+• Modificaciones: Hasta 7 días antes del evento
+
+SERVICIOS ADICIONALES (Costo extra):
+• Chef ejecutivo y menú personalizado
+• Bar abierto o por consumo
+• Fotografía y video profesional
+• DJ o banda en vivo
+• Decoración temática premium
+• Coordinador de eventos dedicado
+• Valet parking
+• Seguridad privada
+
+
+═══════════════════════════════════════════════════════════════════
+  💡 TIPS PARA LA DEMOSTRACIÓN
+═══════════════════════════════════════════════════════════════════
+
+1. Inicia mostrando el docker-compose.yml y explicando la arquitectura
+2. Demuestra primero con JSON-RPC directo para mostrar el MCP
+3. Luego demuestra con Gemini AI en lenguaje natural
+4. Usa casos realistas: boda, conferencia, quinceañera
+5. Muestra los logs en tiempo real durante las operaciones
+6. Explica la idempotencia con el ejemplo de boda premium
+7. Demuestra manejo de errores (fecha pasada, cliente inexistente)
+8. Finaliza mostrando las reservas creadas en la base de datos
+
+
+═══════════════════════════════════════════════════════════════════
+  🎓 ¡Éxito con tu demostración del Local de Eventos! 🚀
+═══════════════════════════════════════════════════════════════════
+
